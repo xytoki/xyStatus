@@ -1,2 +1,4 @@
+xysc/node_modules
 node_modules
 *.log
+config.json

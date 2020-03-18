@@ -9,7 +9,10 @@
   "author": "xytoki",
   "license": "SEE LICENSE IN LICENSE.txt OR GPL-2.0-or-later",
   "dependencies": {
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
     "express": "^4.17.1",
+    "msgpack-lite": "^0.1.26",
     "socket.io": "^2.3.0"
   },
   "devDependencies": {}
