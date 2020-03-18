@@ -1,0 +1,1 @@
+This Software License Agreement (the “Agreement”) is between xyToki ("author”) and You (including your agents and affiliates), a commercial licensee of this software. If you do not have a license from the author, these terms do not apply to you, and your use of the  software is instead governed by the GNU General Public License, version 3.
