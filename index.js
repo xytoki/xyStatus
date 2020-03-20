@@ -7,11 +7,12 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const msgpack = require("msgpack-lite");
 const app = express();
+console.log(__dirname + '/dist');
+app.use(express.static(__dirname + '/dist'));
 app.use(bodyParser.json());
 app.use(cors());
 const server = http.createServer(app);
 const io = require('socket.io')(server);
-
 
 const config = JSON.parse(fs.readFileSync("config.json").toString());
 let box={};
@@ -68,8 +69,9 @@ ioConn.on("connection",function(socket){
 ioPub.on("connection",function(socket){
     socket.on("subscribe",function(n){
         socket.join(n);
-        ioPub.to(n).emit('first',msgpack.encode(genBox(n)));
-    })
+        ioPub.to(n).emit('first',genBox(n));
+        ioPub.to(n).emit('info',config.namespaces[n]);
+    });
 });
 
 app.get("/namespace/:name",function(request,response){
@@ -100,13 +102,13 @@ function genBox(nsp){
 function pushSvr(id){
     if(!rbox[id])return;
     for(let i of rbox[id]){
-        ioPub.to(i).emit('first',msgpack.encode(genBox(i)));
+        ioPub.to(i).emit('first',genBox(i));
     }
 }
 function pushSvrSingle(id){
     if(!rbox[id])return;
     for(let i of rbox[id]){
-        ioPub.to(i).emit('update',msgpack.encode([id,box[id]]));
+        ioPub.to(i).emit('update',[id,box[id]]);
     }
 }
 

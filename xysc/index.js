@@ -5,7 +5,7 @@ const getData = require("./data");
 const msgpack = require("msgpack-lite");
 
 let dsn = process.argv[2]?process.argv[2]:""
-let timer = !isNaN(process.argv[3])?Number(process.argv[3])*1000:60e3;
+let timer = !isNaN(process.argv[3])?Number(process.argv[3])*1000:15e3;
 let auth;
 
 if(!dsn){
