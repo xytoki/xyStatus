@@ -1,6 +1,6 @@
 {
-  "name": "xystatus-client",
-  "version": "1.0.0",
+  "name": "@xytoki/xystatus-client",
+  "version": "1.0.3",
   "main": "index.js",
   "author": "xyToki",
   "license": "MIT",
@@ -9,7 +9,11 @@
     "loadavg-windows": "^1.1.1",
     "msgpack-lite": "^0.1.26",
     "net-stat": "^2.0.1",
+    "npmlog": "^4.1.2",
     "os-utils": "^0.0.14",
     "socket.io-client": "^2.3.0"
+  },
+  "bin": {
+    "xystatus-client": "index.js"
   }
 }

@@ -8,6 +8,7 @@ const bodyParser = require('body-parser');
 const msgpack = require("msgpack-lite");
 const app = express();
 app.use(bodyParser.json());
+app.use(cors());
 const server = http.createServer(app);
 const io = require('socket.io')(server);
 
@@ -52,14 +53,14 @@ ioConn.on("connection",function(socket){
                 online:true,
                 last:Date.now()
             }
-            pushSvr(id);
+            pushSvrSingle(id);
         });
         socket.on("disconnect",function(buf){
             box[id] = {
                 online:false,
                 last:Date.now()
             }
-            pushSvr(id);
+            pushSvrSingle(id);
         });
     });
 })
@@ -67,7 +68,7 @@ ioConn.on("connection",function(socket){
 ioPub.on("connection",function(socket){
     socket.on("subscribe",function(n){
         socket.join(n);
-        ioPub.to(n).emit('update',genBox(n));
+        ioPub.to(n).emit('first',msgpack.encode(genBox(n)));
     })
 });
 
@@ -99,7 +100,13 @@ function genBox(nsp){
 function pushSvr(id){
     if(!rbox[id])return;
     for(let i of rbox[id]){
-        ioPub.to(i).emit('update',genBox(i));
+        ioPub.to(i).emit('first',msgpack.encode(genBox(i)));
+    }
+}
+function pushSvrSingle(id){
+    if(!rbox[id])return;
+    for(let i of rbox[id]){
+        ioPub.to(i).emit('update',msgpack.encode([id,box[id]]));
     }
 }
 
