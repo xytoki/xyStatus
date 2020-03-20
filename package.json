@@ -1,6 +1,6 @@
 {
-  "name": "xy-status-server",
-  "version": "1.0.0",
+  "name": "@xytoki/xystatus-server",
+  "version": "1.0.3",
   "description": "server status monitor server by xyToki",
   "main": "index.js",
   "scripts": {
@@ -13,7 +13,13 @@
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "msgpack-lite": "^0.1.26",
+    "npmlog": "^4.1.2",
+    "pm2": "^4.2.3",
     "socket.io": "^2.3.0"
   },
-  "devDependencies": {}
+  "devDependencies": {},
+  "bin": {
+    "xystatus-server": "bin.js",
+    "xystat-run": "run.js"
+  }
 }

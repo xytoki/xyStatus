@@ -1,20 +1,37 @@
-
+#!/usr/bin/env node
 const fs = require('fs');
 const http = require('http');
 const path = require('path');
-const cors = require('cors')
+const cors = require('cors');
+const log  = require("npmlog");
 const express = require('express');
 const bodyParser = require('body-parser');
 const msgpack = require("msgpack-lite");
+
+let conf = process.argv[2]?process.argv[2]:"config.json"
+let port = !isNaN(process.argv[3])?Number(process.argv[3]):9725;
+let dist = process.argv[4]?process.argv[4]:(__dirname+"/dist")
+
+if(!conf||!fs.existsSync(conf)||!dist||!fs.existsSync(dist)){
+    log.info("Usage","xystatus-server <conf-file> [port=9725] [frontend-dist-dir]");
+    log.info("Usage","eg. xystatus-server /etc/xystatus.json 9725 /tmp/dist");
+    process.exit(0);
+}
+
+conf = path.resolve(conf);
+dist = path.resolve(dist);
+const config = JSON.parse(fs.readFileSync(conf).toString());
+
+log.info("conf",conf,new Date());
+log.info("dist",dist,new Date());
+
 const app = express();
-console.log(__dirname + '/dist');
-app.use(express.static(__dirname + '/dist'));
+app.use(express.static(dist));
 app.use(bodyParser.json());
 app.use(cors());
 const server = http.createServer(app);
 const io = require('socket.io')(server);
 
-const config = JSON.parse(fs.readFileSync("config.json").toString());
 let box={};
 let rbox={};
 for(let i in config.servers){
@@ -38,10 +55,9 @@ const ioConn=io.of("/connect");
 const ioPub=io.of("/public");
 
 ioConn.on("connection",function(socket){
-    console.log("one client connected");
     socket.on("auth",function(buf){
         let {id,token} = msgpack.decode(buf);
-        console.log("got auth "+id);
+        log.info("auth",id,new Date());
         if(config.servers[id]!==token){
             return socket.disconnect();
         }
@@ -122,4 +138,6 @@ app.get("/box/:name",function(request,response){
     response.end();
 })
 
-server.listen(9725);
+server.listen(port,function(){
+    log.info("http","server listening on",port,new Date());
+});
