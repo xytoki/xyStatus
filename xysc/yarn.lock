@@ -94,11 +94,6 @@
   dependencies:
     debug "^4.1.1"
 
-"@stroncium/procfs@^1.1.1":
-  version "1.1.1"
-  resolved "https://registry.npm.taobao.org/@stroncium/procfs/download/@stroncium/procfs-1.1.1.tgz#6ae4b4938cf3b6c3fb957f3063b2c0a8b26ee599"
-  integrity sha1-auS0k4zztsP7lX8wY7LAqLJu5Zk=
-
 after@0.8.2:
   version "0.8.2"
   resolved "https://registry.npm.taobao.org/after/download/after-0.8.2.tgz#fedb394f9f0e02aa9768e702bda23b505fae7e1f"
@@ -1014,11 +1009,6 @@ needle@2.4.0:
     iconv-lite "^0.4.4"
     sax "^1.2.4"
 
-net-stat@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.npm.taobao.org/net-stat/download/net-stat-2.0.1.tgz#e6de8b2fe6acb3e09a93fd37e3133cc50f6ce19d"
-  integrity sha1-5t6LL+ass+Cak/034xM8xQ9s4Z0=
-
 netmask@^1.0.6:
   version "1.0.6"
   resolved "https://registry.npm.taobao.org/netmask/download/netmask-1.0.6.tgz#20297e89d86f6f6400f250d9f4f6b4c1945fcd35"
@@ -1528,7 +1518,7 @@ supports-color@^5.3.0:
   dependencies:
     has-flag "^3.0.0"
 
-systeminformation@^4.14.16:
+systeminformation@^4.14.16, systeminformation@^4.23.1:
   version "4.23.1"
   resolved "https://registry.npm.taobao.org/systeminformation/download/systeminformation-4.23.1.tgz#03dcc16570adfa1e0b6ceb871aad8f34c9ae8014"
   integrity sha1-A9zBZXCt+h4LbOuHGq2PNMmugBQ=

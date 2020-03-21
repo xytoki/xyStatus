@@ -1,10 +1,13 @@
 require('loadavg-windows');
 const os = require('os');
 const osutil = require('os-utils');
-const netStat = require('net-stat');
-const cp = require("child_process");
-const { procfs } = require('@stroncium/procfs');
+const si = require('systeminformation');
 const statusObj={};
+function sleep(time){
+    return new Promise(function(resolve){
+        setTimeout(resolve,time);
+    });
+}
 Object.defineProperties(statusObj,{
     uptime:{
         enumerable:true,
@@ -15,48 +18,26 @@ Object.defineProperties(statusObj,{
     loadavg:{
         enumerable:true,
         get(){
-            return os.loadavg();
-        }
-    },
-    mem:{
-        enumerable:true,
-        get(){
-            let mi = procfs.meminfo();
-            return {
-                total:Math.round((os.totalmem())/1024/1024*100)/100,
-                available:Math.round((os.type=="Windows_NT"?os.freemem():mi.available)/1024/1024*1000)/1000,
-                swapFree:Math.round((os.type=="Windows_NT"?0:mi.swapFree)/1024/1024*1000)/1000,
-                swap:Math.round((os.type=="Windows_NT"?0:mi.swapTotal)/1024/1024*1000)/1000
+            let d = os.loadavg();
+            for(let i in d){
+                d[i] = Math.round(d[i]*10000)/10000
             }
-        }
-    },
-    net:{
-        enumerable:true,
-        get(){
-            return {
-                rx:Math.round(netStat.totalRx({units: 'MiB'})*1000)/1000,
-                tx:Math.round(netStat.totalTx({units: 'MiB'})*1000)/1000
-            }
+            return d;
         }
     }
 });
 const asyncStatusObj={
-    disk(){
-        return new Promise(function(resolve,rej){
-            cp.exec("df -Tlm --total -t ext4 -t ext3 -t ext2 -t reiserfs -t jfs -t ntfs -t fat32 -t btrfs -t fuseblk -t zfs -t simfs -t xfs",function(err,res){
-                if(err)return rej();
-                res = res.trim().split("\n");
-                let total = res[res.length-1];
-                for(let i=1;i<11;i++){
-                    total = total.replace(/  /g," ")
-                }
-                total = total.split(" ");
-                resolve({
-                    total:Number(total[2]),
-                    used:Number(total[3]),
-                });
-            });
-        })
+    async disk(){
+        let disk = await si.fsSize();
+        let data = {
+            used:0,
+            total:0
+        }
+        for(let i of disk){
+            data.used+=Math.round(i.used/1024/1024*1000)/1000
+            data.total+=Math.round(i.size/1024/1024*1000)/1000
+        }
+        return data
     },
     cpu(){
         return new Promise(function(resolve,rej){
@@ -64,6 +45,37 @@ const asyncStatusObj={
                 resolve(Math.round(v*10000)/10000);
             });
         })
+    },
+    async mem(){
+        let mem = await si.mem();
+        return {
+            total:Math.round(mem.total/1024/1024*100)/100,
+            available:Math.round(mem.available/1024/1024*1000)/1000,
+            swapFree:Math.round(mem.swapfree/1024/1024*1000)/1000,
+            swap:Math.round(mem.swaptotal/1024/1024*1000)/1000
+        }
+    },
+    async net(){
+        await si.networkStats();
+        await sleep(300);
+        let net = await si.networkStats();
+        let data = {
+            rx:0,
+            tx:0,
+            rx_total:0,
+            tx_total:0
+        }
+        for(let i of net){
+            if(i.iface=="lo")continue;
+            data.rx+=i.rx_sec;
+            data.tx+=i.tx_sec;
+            data.rx_total+=i.rx_bytes;
+            data.tx_total+=i.tx_bytes;
+        }
+        for(let i in data){
+            data[i] = Math.round(data[i]/1024/1024*1000)/1000;
+        }
+        return data;
     }
 };
 module.exports = async function getData(){
