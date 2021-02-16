@@ -11,7 +11,7 @@
     "os-utils": "^0.0.14",
     "pm2": "^4.2.3",
     "socket.io-client": "^2.3.0",
-    "systeminformation": "^4.23.1"
+    "systeminformation": "^5.3.1"
   },
   "bin": {
     "xystatus-client": "index.js",
